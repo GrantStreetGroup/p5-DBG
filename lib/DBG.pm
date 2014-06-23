@@ -1,5 +1,5 @@
 package DBG;
-$DBG::VERSION = '0.001';
+$DBG::VERSION = '0.002';
 # ABSTRACT: A collection of debugging functions
 
 
@@ -65,7 +65,7 @@ BEGIN {
 }
 
 END {
-    if ($stamped) {
+    if ( $HEADER && $stamped ) {
         my $msg = join '', "\n", '** DEBUGGING SESSION END: ', DateTime->now,
           ' ; PID: ',
           $$, ' **';
@@ -77,7 +77,7 @@ END {
 {    # DateTime with optional label payload
 
     package DBG::ts;
-$DBG::ts::VERSION = '0.001';
+$DBG::ts::VERSION = '0.002';
 use parent 'DateTime';
     use Scalar::Util qw(refaddr);
 
@@ -399,7 +399,7 @@ DBG - A collection of debugging functions
 
 =head1 VERSION
 
-version 0.001
+version 0.002
 
 =head1 SYNOPSIS
 

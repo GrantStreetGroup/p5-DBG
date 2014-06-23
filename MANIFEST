@@ -7,7 +7,6 @@ Makefile.PL
 README
 TODO.md
 lib/DBG.pm
-perltidy.ERR
 t/00-compile.t
 t/000-report-versions-tiny.t
 t/basic.t
