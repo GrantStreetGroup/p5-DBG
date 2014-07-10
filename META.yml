@@ -22,6 +22,9 @@ meta-spec:
   version: '1.4'
 name: DBG
 no_index: {}
+optional_features:
+  sz:
+    description: 'Report the memory requirements of a reference'
 requires:
   B: '0'
   B::Deparse: '0'
@@ -39,4 +42,4 @@ requires:
   perl: v5.10.0
   strict: '0'
   warnings: '0'
-version: '0.002'
+version: '0.003'

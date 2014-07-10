@@ -1,5 +1,5 @@
 package DBG;
-$DBG::VERSION = '0.002';
+$DBG::VERSION = '0.003';
 # ABSTRACT: A collection of debugging functions
 
 
@@ -67,8 +67,7 @@ BEGIN {
 END {
     if ( $HEADER && $stamped ) {
         my $msg = join '', "\n", '** DEBUGGING SESSION END: ', DateTime->now,
-          ' ; PID: ',
-          $$, ' **';
+          ' ; PID: ', $$, ' **';
         _tee($msg);
     }
     $fh->close if $fh;
@@ -77,7 +76,7 @@ END {
 {    # DateTime with optional label payload
 
     package DBG::ts;
-$DBG::ts::VERSION = '0.002';
+$DBG::ts::VERSION = '0.003';
 use parent 'DateTime';
     use Scalar::Util qw(refaddr);
 
@@ -288,9 +287,15 @@ sub pkg($$;$) {
 
 
 sub sz($;$) {
-    my $msg = total_size pop @_;
-    $msg = pop(@_) . ' ' . $msg if @_;
-    _tee($msg);
+    state $ts = eval { require Devel::Size };
+    if ($ts) {
+        my $msg = Devel::Size::total_size( pop @_ );
+        $msg = pop(@_) . ' ' . $msg if @_;
+        _tee($msg);
+    }
+    else {
+        _tee('sz requires Devel::Size');
+    }
 }
 
 
@@ -399,7 +404,7 @@ DBG - A collection of debugging functions
 
 =head1 VERSION
 
-version 0.002
+version 0.003
 
 =head1 SYNOPSIS
 
@@ -409,21 +414,21 @@ version 0.002
   ...
   dbg "log this $message";
   ...
-  png;                   # do I ever get here?
+  png;                  # do I ever get here?
   ...
-  trc;                   # how did I get here?
+  trc;                  # how did I get here?
   ...
-  dmp $obj;              # what is this?
+  dmp $obj;             # what is this?
   ...
-  cyc $obj;              # does this have reference cycles?
+  cyc $obj;             # does this have reference cycles?
   ...
-  my $ts = ts;           # get me the current time
+  my $ts = ts;          # get me the current time
   ...
-  rt $ts, ts;            # how long did that take?
+  rt $ts, ts;           # how long did that take?
   ...
-  prp "is it so?", $val; # prints message plus "yes" or "no"
+  prp "is it so", $val; # prints message plus "yes" or "no"
   ...
-  pkg $obj, 'doit';      # prints package providing obj's doit method
+  pkg $obj, 'doit';     # prints package providing obj's doit method
   ...
 
 =head1 DESCRIPTION
@@ -447,7 +452,7 @@ trying to compile the code and looking at the errors.
 All functions have short names to make debugging quick(er).
 
 All debugging messages are printed both to the screen and to a log. The log will
-be C<~/log> unless otherwise specified. See C<$ENV{DBG_LOG}>. This facilitates
+be C<~/DBG.log> unless otherwise specified. See C<$ENV{DBG_LOG}>. This facilitates
 examining debugging output at one's leisure without having to visually cull away
 any other output produced by the program.
 
@@ -622,7 +627,9 @@ as a label and the second the scalar.
   sz {};         # 128
   sz 'foo', {};  # foo 128
 
-This delegates to the C<total_size> function in L<Devel::Size>.
+This delegates to the C<total_size> function in L<Devel::Size>. If you do not
+have L<Devel::Size>, the C<sz> will only emit a warning that it requires
+L<Devel::Size>.
 
 =head2 mtd($;$) -- "method"
 
@@ -696,7 +703,7 @@ copies with flattened values. Anything blessed it stringifies.
 
   flt { bar => 1, baz => DateTime->now };
 
-  # $VAR1 = {
+  # {
   #     'bar' => 1,
   #     'baz' => '2014-05-31T21:04:07'
   # };
@@ -756,11 +763,11 @@ for screening it out:
   my $rx = qr/
     ( (?&line){0,3} (?&dbg) (?&line){0,3} )
     (?(DEFINE)
-      (?<line> ^.*?(?:\R|\Z) )
-      (?<dbg>  ^\+\s*use\s+DBG\b.*?(?:\R|\Z) )
+      (?<line> ^.*?(?:\R|\z) )
+      (?<dbg>  ^\+\s*use\s+DBG\b.*?(?:\R|\z) )
     )
   /mx;
-  my $text = `git diff HEAD`;
+  my $text = `git diff --staged`;
   if ( my @matches = $text =~ /$rx/g ) {
       @matches = grep defined, @matches;
       exit 0 unless @matches;

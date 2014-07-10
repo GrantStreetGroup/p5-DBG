@@ -73,10 +73,13 @@ ok $stderr =~ /^package: Foo; file: .*\bbasic.t; line: \d/, 'pgk -- 2 arg';
 $log .= $stderr = capture_stderr { pkg $foo, 'foo', 1 };
 ok $stderr =~ /^Foo$/, 'pgk -- 3 arg';
 
-$log .= $stderr = capture_stderr { sz [] };
-ok $stderr =~ /^\d+$/, 'sz -- 1 arg';
-$log .= $stderr = capture_stderr { sz 'foo', [] };
-ok $stderr =~ /^foo \d+$/, 'sz -- 2 arg';
+SKIP: {
+    skip 'Devel::Size required', 2, unless eval { require Devel::Size };
+    $log .= $stderr = capture_stderr { sz [] };
+    ok $stderr =~ /^\d+$/, 'sz -- 1 arg';
+    $log .= $stderr = capture_stderr { sz 'foo', [] };
+    ok $stderr =~ /^foo \d+$/, 'sz -- 2 arg';
+}
 
 $log .= $stderr = capture_stderr { mtd $foo };
 ok $stderr =~ /^Class: Foo.*'Foo::foo.*'Foo::new/s, 'mtd -- 1 arg';
