@@ -97,8 +97,7 @@ ok $stderr =~
 $log .= $stderr = capture_stderr {
     dpr sub { print "foo" }
 };
-ok $stderr =~ /^\{\s+use warnings;\s+use strict 'refs';\s+print 'foo';\s+\}/,
-  'dpr';
+like $stderr, qr/^\{.*\bprint\s.*\bfoo\b.*\}/s, 'dpr';
 
 $log .= $stderr = capture_stderr { flt { foo => $foo } };
 ok $stderr =~ /^\{ foo => 'str' \}/, 'flt';

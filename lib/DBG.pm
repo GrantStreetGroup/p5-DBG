@@ -1,5 +1,5 @@
 package DBG;
-$DBG::VERSION = '0.003';
+$DBG::VERSION = '0.004';
 # ABSTRACT: A collection of debugging functions
 
 
@@ -76,7 +76,7 @@ END {
 {    # DateTime with optional label payload
 
     package DBG::ts;
-$DBG::ts::VERSION = '0.003';
+$DBG::ts::VERSION = '0.004';
 use parent 'DateTime';
     use Scalar::Util qw(refaddr);
 
@@ -404,7 +404,7 @@ DBG - A collection of debugging functions
 
 =head1 VERSION
 
-version 0.003
+version 0.004
 
 =head1 SYNOPSIS
 
