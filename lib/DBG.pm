@@ -377,12 +377,12 @@ sub _flt {
     my $i = shift;
     return "$i" if blessed $i;
     for ( ref $i ) {
-        when ('HASH') {
+        if ($_ eq 'HASH') {
             my %h = %$i;
             $_ = _flt($_) for values %h;
             return \%h;
         }
-        when ('ARRAY') {
+        elsif ($_ eq 'ARRAY') {
             return [ map { _flt($_) } @$i ];
         }
     }
